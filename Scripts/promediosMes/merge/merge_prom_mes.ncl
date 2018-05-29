@@ -1,145 +1,77 @@
-;===============================================================
-; ¡¡¡ IMPORTANTE !!!                                           |
-; Se comentarran las demas variables por que solo se calculara |
-; GLW (Radiacion de Onda Larga) y SWDOWN (Radiación de onda    |
-; corta)                                                       |
-;                                                              |
-;==============================================================
-
-; --- funcion que limpia los nombres de los años ---
-function limpiaNombreAnios(tamanio, original)
-begin
-    miArreglo = new(tamanio,string)
-    do n=0,tamanio-1        
-        miArreglo(n) = str_split(original(n), "a")
-    end do 
-    return miArreglo
-end
-
-;------------------------------------------------------------------
-; --- Funcion que crea un arreglo de una dimension ---
-function createArray(size)
-begin
-    myarray = new(size,float)
-    do n=0,size-1
-        myarray(n) = n 
-    end do 
-    return myarray
-end
-
-;Numero de anios a ejecutar
-ANIOS = 37
 ;--- Ruta base ---
-BASE = "/KRAKEN/DATOS3/"
-;--- Prefijo ---
-PREFIX_FILE_C1H = "wrfout_c1h_d01_"
-;--- Numero de DATOS de todos los años por cada dia
-TOTAL_DATOS = 24 * ANIOS
-;Constantes para calcular GLW_neta
-epsilon = 0.96
-delta = 0.0000000567
+RUTA = "/home/rmedina/out/promediosMes/rh/"
+PREFIJO = "Promedios_Mes_RH_"
+EXT = ".nc"
+
+MES = (/"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"/)
 
 ; ----------------------------------------;
 ; ---- Inicializar las variables en 0 ----;
 
 ; --- U10 Viento a 10 M ----
-;U10 = new ((/365, 348, 617/), float)
-;U10(:,:,:) = 0.0 
+;U10 = new ((/12, 348, 617/), float)
+;U10(:,:,:) = 0.0
 
-; --- V10 Viento a 10 M ---
-;V10 = new ((/365, 348, 617/), float)
+; --- V10 Veinto a 10 M ----
+;V10 = new ((/12, 348, 617/), float)
 ;V10(:,:,:) = 0.0
 
-; --- Temperatura del aire a 2 mts ----
-;T2 = new ((/365, 348, 617/), float)
-;T2(:,:,:) = 0.0 
+; --- Temperatura del aire a 2 mts por mes ----
+;T2 = new ((/12, 348, 617/), float)
+;T2(:,:,:) = 0.0
 
-; --- RAINC Precipitación  acumulada ---
-;PREC2 = new ((/365, 348, 617/), float)
+; --- PREC2 Precipitación  acumulada ---
+;PREC2 = new ((/12, 348, 617/), float)
 ;PREC2(:,:,:) = 0.0
 
-; --- SWDOWN ---
-;SWDOWN = new ((/365, 348, 617/), float)
-;SWDOWN(:,:,:) = 0.0
-
-; --- GLW ---
-GLW = new ((/365, 348, 617/), float)
-GLW(:,:,:) = 0.0
-
-; --- PBLH ---
-;PBLH = new ((/365, 348, 617/), float)
+; --- PBLH Altura de capa limite ----
+;PBLH = new ((/12, 348, 617/), float)
 ;PBLH(:,:,:) = 0.0
 
-; --- QFX (Evaporación)---
-;QFX = new ((/365, 348, 617/), float)
+; --- QFX Evaporacion ----
+;QFX = new ((/12, 348, 617/), float)
 ;QFX(:,:,:) = 0.0
 
-;-------------------------------------
-; Se obtienen las rutas de los folders donde estan los datos
-; y se guarda en un arreglo 'folders'
-folders = systemfunc("ls " + BASE)
+; --- SWDOWN Radiacion de Onda Corta ----
+;SWDOWN = new ((/12, 348, 617/), float)
+;SWDOWN(:,:,:) = 0.0
 
-;Numero de folders
-nFolders = dimsizes(folders)
+; --- GLW Radiacion de Onda Larga ----
+;GLW = new ((/12, 348, 617/), float)
+;GLW(:,:,:) = 0.0
 
-;Limpia el nombre de la carpeta, quitando unicamente la letra 'a'
-;p. ej. : 'a2000' --> '2000'
-nombres_anios = limpiaNombreAnios(nFolders, folders)
+; --- RH Humedad Relativa ----
+RH = new ((/12, 348, 617/), float)
+RH(:,:,:) = 0.0
 
-; -- Recorremos las carpetas por Año ----;
-do anio = 1, (nFolders - 2)    
+do i = 0 , 11
+    ; Se carga el archivo del  mes correspondiente
+    ruta_archivo = RUTA + PREFIJO + MES(i) + EXT
+    print(ruta_archivo)
+    archivo := addfile(ruta_archivo, "r")
 
-    print("Año  :  " + nombres_anios(anio))
-    
-    ruta_archivos_anio := BASE + folders(anio) + "/" + PREFIX_FILE_C1H + nombres_anios(anio)
-    archivos_X_anio := systemfunc("ls " + ruta_archivos_anio + "*")
-    num_archivos_anio := dimsizes(archivos_X_anio)
+    ;Se cargan las variables del archivo 
+    ;U10_actual := archivo->U10
+    ;V10_actual := archivo->V10
+    ;T2_actual := archivo->T2
+    ;PREC2_actual := archivo->PREC2
+    ;PBLH_actual := archivo->PBLH
+    ;QFX_actual := archivo->QFX
+    ;SWDOWN_actual := archivo->SWDOWN
+    ;GLW_actual := archivo->GLW
+    RH_actual := archivo->RH
 
-    ; ---- Indice para iterar sobre la matriz resultado ---
-    j := 0
+    ;Copiamos las variables del mes
+    ;U10(i,:,:) = U10_actual(0,:,:)
+    ;V10(i,:,:) = V10_actual(0,:,:)
+    ;T2(i,:,:) = T2_actual(0,:,:)
+    ;PREC2(i,:,:) = PREC2_actual(0,:,:)
+    ;PBLH(i,:,:) = PBLH_actual(0,:,:)
+    ;QFX(i,:,:) = QFX_actual(0,:,:)
+    ;SWDOWN(i,:,:) = SWDOWN_actual(0,:,:)
+    ;GLW(i,:,:) = GLW_actual(0,:,:)
+    RH(i,:,:) = RH_actual(0,:,:)
 
-    do dia = 0, (num_archivos_anio - 1)
-        
-        if(dia .eq. 59 .and. num_archivos_anio .gt. 365) then
-            dia = dia + 1            
-        end if
-        
-        ;--- carga el archivo --- 
-        archivo := addfile(archivos_X_anio(dia), "r")
-        
-        ; Cargamos las variables
-        ;U10_actual := archivo->U10
-        ;V10_actual := archivo->V10            
-        T2_actual := archivo->T2
-
-        ;RAINC_actual := archivo->RAINC
-        ;RAINNC_actual := archivo->RAINNC
-        
-        ;SWDOWN_actual := archivo->SWDOWN
-        GLW_actual := archivo->GLW
-        ;PBLH_actual := archivo->PBLH
-        ;QFX_actual := archivo->QFX
-        
-        ;PREC2(j,:,:) = PREC2(j,:,:) + ((RAINC_actual(23,:,:) + RAINNC_actual(23,:,:) - (RAINC_actual(0,:,:) + RAINNC_actual(0,:,:))) / TOTAL_DATOS)
-        GLW_neta := (GLW_actual - (epsilon * delta * T2_actual^4))
-
-        do hora = 0, 23
-                
-            ;T2(j,:,:) = T2(j,:,:) + ((T2_actual(hora,:,:) - 273.15 ) / TOTAL_DATOS)            
-            ;SWDOWN(j,:,:) = SWDOWN(j,:,:) + (SWDOWN_actual(hora,:,:) / TOTAL_DATOS)
-            GLW(j,:,:) = GLW(j,:,:) + (GLW_neta(hora,:,:) / TOTAL_DATOS)
-            ;PBLH(j,:,:) = PBLH(j,:,:) + (PBLH_actual(hora,:,:) / TOTAL_DATOS)   
-            ;QFX(j,:,:) = QFX(j,:,:) + (QFX_actual(hora,:,:) / TOTAL_DATOS)
-            ;U10(j,:,:) = U10(j,:,:) + (U10_actual(hora,:,:) / TOTAL_DATOS)            
-            ;V10(j,:,:) = V10(j,:,:) + (V10_actual(hora,:,:) / TOTAL_DATOS)
-
-        end do
-        
-        j = (j + 1)
-
-    end do
- 
-    print("Termino año ..." + nombres_anios(anio))
 
 end do
 
@@ -150,11 +82,11 @@ end do
 ;----------------------------------
 ;  Creamos la dimension tiempo 
 ;----------------------------------
-time = createArray(365)
+time = (/0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334/)
 time@standard_name = "time"
 time@long_name     = "Time"
 time@units         = "days since 2018-01-01 00:00:00"
-time@calendar      = "365_day"
+time@calendar      = "noleap"
 time@axis          = "T"
 ntime = dimsizes(time)
 
@@ -216,7 +148,7 @@ lon@units         =  "degrees_east"
 ;T2@description   = "TEMP at 2 M"
 
 ;-------------------------------------
-;  Creamos los atributos para  PREC2
+;  Creamos los atributos para  
 ;-------------------------------------
 ;PREC2@units         = "mm"
 ;PREC2@standard_name = "Precipitation"
@@ -224,7 +156,7 @@ lon@units         =  "degrees_east"
 ;PREC2@description   = "Precipitation"
 
 ;-------------------------------------
-;  Creamos los atributos para  SWDOWN
+;  Creamos los atributos para  
 ;-------------------------------------
 ;SWDOWN@units         = "W m-2"
 ;SWDOWN@standard_name = "shortwave radiation"
@@ -232,15 +164,15 @@ lon@units         =  "degrees_east"
 ;SWDOWN@description   = "Downward short wave flux at ground surface"
 
 ;-------------------------------------
-;  Creamos los atributos para GLW
+;  Creamos los atributos para  
 ;-------------------------------------
-GLW@units         = "W m-2"
-GLW@standard_name = "longwave radiation"
-GLW@long_name     = "Longwave radiation"
-GLW@description   = "Downward long wave flux at ground surface"
+;GLW@units         = "W m-2"
+;GLW@standard_name = "longwave radiation"
+;GLW@long_name     = "Longwave radiation"
+;GLW@description   = "Downward long wave flux at ground surface"
 
 ;-------------------------------------
-;  Creamos los atributos para PBLH
+;  Creamos los atributos para  
 ;-------------------------------------
 ;PBLH@units         = "m"
 ;PBLH@standard_name = "atmosphere_boundary_layer_thickness"
@@ -251,27 +183,35 @@ GLW@description   = "Downward long wave flux at ground surface"
 ;  Creamos los atributos para QFX
 ;-------------------------------------
 ;QFX@units         = "kg m-2 s-1"
-;QFX@standard_name = "Evaporation"
+;FX@standard_name = "Evaporation"
 ;QFX@long_name     = "Evaporation"
 ;QFX@description   = "Upward Moisture Flux at the Surface"
 
+;--------------------------------
+;  Creamos los atributos para RH 
+;--------------------------------
+RH@units         = "%"
+RH@standard_name = "relative_humidity"
+RH@long_name     = "relative_humidity"
+RH@description   = "Relative Humidity"
+
 ;==========================================
-; Definimos el archivo de salida QFX
+; Definimos el archivo de salida 
 ;==========================================
 
 ;------------------------------------------
 ;  Creamos el archivo de salida 
 ;------------------------------------------
-diro = "/home/rmedina/out/promediosDiarios/" ; Output directory
-filo = "Promedios_Dia_GLW.nc"    ; Output file
-system("rm -f " + diro + filo)               ; remueve el archivo si es que ya existe
-fout  = addfile (diro + filo, "c")           ; agrega el archivo de salida
+diro = "/home/rmedina/out/promediosMes/"                     ; Output directory
+filo = "Promedios_Mes_RH.nc"              ; Output file
+system("rm -f " + diro + filo)    ; remove if exists
+fout  = addfile (diro + filo, "c")  ; open output file
 
 ;-----------------------------------------
 ;  Creamos las variables globales 
 ;-----------------------------------------
 fAtt               = True            ; asignamos atributos al archivo
-fAtt@title         = "Promedios diarios"  
+fAtt@title         = "Promedios por mes (RH)"  
 fAtt@institution   = "UNAM, Centro de Ciencias de la Atmósfera"  
 fAtt@source        = "Synthetic data"  
 fAtt@history       = "First version"  
@@ -298,10 +238,14 @@ filevardef(fout, "Longitude", typeof(lon) , "Longitude") ;Dimension longitud
 ;filevardef(fout, "V10"      , typeof(V10) , (/"time", "Latitude", "Longitude"/)) ;Viento V a 10 M
 ;filevardef(fout, "T2"       , typeof(T2)     , (/"time", "Latitude", "Longitude"/))        ;Temperatura del aire a 2m
 ;filevardef(fout, "PREC2"    , typeof(PREC2)  , (/"time", "Latitude", "Longitude"/))        ;Precipitacion
+
 ;filevardef(fout, "SWDOWN"   , typeof(SWDOWN) , (/"time", "Latitude", "Longitude"/))        ;Radiación de onda corta
-filevardef(fout, "GLW"      , typeof(GLW)    , (/"time", "Latitude", "Longitude"/))        ;Radiación de onda larga
+;filevardef(fout, "GLW"      , typeof(GLW)    , (/"time", "Latitude", "Longitude"/))        ;Radiación de onda larga
+
 ;filevardef(fout, "PBLH"     , typeof(PBLH)   , (/"time", "Latitude", "Longitude"/))        ;Altura de capa límite
 ;filevardef(fout, "QFX"      , typeof(QFX)    , (/"time", "Latitude", "Longitude"/))        ;Evaporacion
+
+filevardef(fout, "RH"      , typeof(RH)    , (/"time", "Latitude", "Longitude"/))        ;Humedad Relativa
 
 ;----------------------------------------------------------------------
 ;  Copiar atributos asociados con cada variable a el archivo de salida
@@ -314,10 +258,14 @@ filevarattdef(fout, "Longitude", lon )  ;copia los atributos de longitud
 ;filevarattdef(fout, "V10"      , V10 )  ;copia los atributos de V10
 ;filevarattdef(fout, "T2"       , T2     )  ;copia los atributos de T2
 ;filevarattdef(fout, "PREC2"    , PREC2  )  ;copia los atributos de RAINC
+
 ;filevarattdef(fout, "SWDOWN"   , SWDOWN )  ;copia los atributos de SWDOWN
-filevarattdef(fout, "GLW"      , GLW    )  ;copia los atributos de GLW
+;filevarattdef(fout, "GLW"      , GLW    )  ;copia los atributos de GLW
+
 ;filevarattdef(fout, "PBLH"     , PBLH   )  ;copia los atributos de PBLH
 ;filevarattdef(fout, "QFX"      , QFX    )  ;copia los atributos de QFX
+
+filevarattdef(fout, "RH"      , RH    )  ;copia los atributos de RH
 
 ;------------------------------------------------
 ;  Obtenemos unicamente los valores de los datos 
@@ -325,24 +273,28 @@ filevarattdef(fout, "GLW"      , GLW    )  ;copia los atributos de GLW
 fout->time      = (/time/)
 print("copiamos time ....")
 fout->Latitude  = (/lat/)
-print("copiamos lat ...")
+print("copiamos latitud ....")
 fout->Longitude = (/lon/)
-print("Copiamos lon ...")
+print("copiamos longitud ....")
 
-;fout->T2        = (/T2/)
-;print("Copiamos T2 ...")
-;fout->U10       = (/U10/)
-;print("Copiamos U10 ...")
-;fout->V10       = (/V10/)
+;fout->U10        = (/U10/)
+;rint("Copiamos U10 ...")
+;fout->V10     = (/V10/)
 ;print("Copiamos V10 ...")
+;fout->T2        = (/T2/)
+;print("copiamos T2 ....")
 ;fout->PREC2     = (/PREC2/)
-;print("Copiamos PREC2 ...")
+;print("copiamos PREC2| ....")
+
 ;fout->SWDOWN    = (/SWDOWN/)
-;print("Copiamos SWDOWN ...")
-fout->GLW       = (/GLW/)
-print("Copiamos GLW ... ")
+;print("copiamos SWDOWN ....")
+;fout->GLW       = (/GLW/)
+;print("copiamos GLW ....")
+
 ;fout->PBLH      = (/PBLH/)
-;print("Copiamos PBLH ... ")
+;print("copiamos PBLH ....")
 ;fout->QFX       = (/QFX/)
 ;print("Copiamos QFX ... ")
 
+fout->RH       = (/RH/)
+print("copiamos RH ....")
