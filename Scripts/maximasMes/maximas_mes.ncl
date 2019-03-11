@@ -113,7 +113,7 @@ do anio = 3, 11 ;(nFolders - 1)
             SWDOWN_MAX_DIA(dia,:,:) = dim_max_n(SWDOWN_actual, 0)
             GLW_MAX_DIA(dia,:,:) = dim_max_n(GLW_actual, 0)
             PBLH_MAX_DIA(dia,:,:) = dim_max_n(PBLH_actual, 0)
-            GLW_MAX_DIA(dia,:,:) = dim_max_n(QFX_actual, 0)
+            QFX_MAX_DIA(dia,:,:) = dim_max_n(QFX_actual, 0)
 
         end do
 
